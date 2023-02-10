@@ -23,7 +23,7 @@ public class Main {
         colors.put(3,"F");
 
         File out = new File("./main.mcfunction");
-        out.createNewFile();
+        if(out.createNewFile()) System.out.println("There was already an output file, so it has been overwritten.");
         output = new FileWriter(out);
         output.write("""
                 ##
@@ -82,7 +82,7 @@ public class Main {
                     if(pixelI % 2 != 0) {
                         String color = colors.get((pixel & 0xFF) / 64);
                         if(!Objects.equals(lastColor, color)) {
-                            command.append("§");
+                            command.append("§l§");
                             command.append(color);
                             lastColor = color;
                         }
