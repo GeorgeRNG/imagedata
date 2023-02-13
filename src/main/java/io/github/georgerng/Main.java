@@ -8,19 +8,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class Main {
     public static FileWriter output = null;
-    public static final Map<Integer,String> colors = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
-        colors.put(0,"0");
-        colors.put(1,"8");
-        colors.put(2,"7");
-        colors.put(3,"F");
 
         File out = new File("./main.mcfunction");
         if(out.createNewFile()) System.out.println("There was already an output file, so it has been overwritten.");
@@ -63,9 +56,9 @@ public class Main {
 
         int[] data = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
-        StringBuilder command = new StringBuilder("execute as @e[type=minecraft:text_display,tag=badapple,tag=");
+        StringBuilder command = new StringBuilder("execute as @e[type=minecraft:text_display,tag=video,tag=");
         command.append(index);
-        command.append("] run data merge entity @s {Tags:[\"badapple\",\"");
+        command.append("] run data merge entity @s {Tags:[\"video\",\"");
         command.append(index + 1);
         command.append("\"],text:\"\\\"");
 
@@ -75,12 +68,12 @@ public class Main {
         int width = image.getWidth(); // chunk size to divide
         for(int i = 0; i < data.length; i += width){
             lineI++;
-            if(lineI % 2 != 0) {
+            if(lineI % 3 == 0) {
                 int[] line = Arrays.copyOfRange(data, i, i+width);
                 for (int pixel: line) {
                     pixelI++;
-                    if(pixelI % 2 != 0) {
-                        String color = colors.get((pixel & 0xFF) / 64);
+                    if(pixelI % 3 == 0) {
+                        String color = getCode(pixel);
                         if(!Objects.equals(lastColor, color)) {
                             command.append("§l§");
                             command.append(color);
@@ -96,6 +89,15 @@ public class Main {
         command.replace(command.length() - 3,command.length(),"");
         command.append("\\\"\"}\n");
         output.write(command.toString());
+    }
+
+    private static String getCode(int color) {
+        boolean i = color > (0xAA_AA_AA / 2);
+        int min = i ? 0xAA : 0x55;
+        int r = ((0xFF0000 & color) >> 16) > min ? 1 : 0;
+        int g = ((0x00FF00 & color) >>  8) > min ? 1 : 0;
+        int b = ((0x0000FF & color)      ) > min ? 1 : 0;
+        return Integer.toHexString(((i ? 1 : 0) << 3) + (r << 2) + (g << 1) + (b));
     }
 
     private static String padLeft(String number, int zeros) {
