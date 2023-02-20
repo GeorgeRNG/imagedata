@@ -8,10 +8,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class Main {
     public static FileWriter output = null;
+    private static List<String> grayscale = List.of("0","8","7","F");
 
     public static void main(String[] args) throws IOException {
 
@@ -21,7 +23,7 @@ public class Main {
         output.write("""
                 ##
                  # main.builder.mcfunction
-                 # badapple
+                 # imagedata
                  #
                  # Created by GeorgeRNG.
                  #
@@ -31,7 +33,13 @@ public class Main {
                 """);
 
         int nameLen = 3;
-        int frames = Integer.parseInt(args[0]);
+        int frames;
+        if(args.length == 0) {
+            frames = 100;
+        }
+        else {
+            frames = Integer.parseInt(args[0]);
+        }
 
         for (int i = frames - 1; i >= 0; i-= 1) {
             try {
@@ -75,8 +83,9 @@ public class Main {
                     if(pixelI % 3 == 0) {
                         String color = getCode(pixel);
                         if(!Objects.equals(lastColor, color)) {
-                            command.append("§l§");
+                            command.append("§"); // §r
                             command.append(color);
+                            command.append("§l");
                             lastColor = color;
                         }
                         command.append("█");
@@ -92,12 +101,15 @@ public class Main {
     }
 
     private static String getCode(int color) {
-        boolean i = color > (0xAA_AA_AA / 2);
-        int min = i ? 0xAA : 0x55;
-        int r = ((0xFF0000 & color) >> 16) > min ? 1 : 0;
-        int g = ((0x00FF00 & color) >>  8) > min ? 1 : 0;
-        int b = ((0x0000FF & color)      ) > min ? 1 : 0;
-        return Integer.toHexString(((i ? 1 : 0) << 3) + (r << 2) + (g << 1) + (b));
+        int colour = (int) (((color & 0xAA) * 1.25490196078431) / 64);
+        return grayscale.get(colour);
+        // boolean i = color > (0xAA_AA_AA / 2);
+        // int min = i ? 0xAA : 0x55;
+        // int r = ((0xFF0000 & color) >> 16) > min ? 1 : 0;
+        // int g = ((0x00FF00 & color) >>  8) > min ? 1 : 0;
+        // int b = ((0x0000FF & color)      ) > min ? 1 : 0;
+        // System.out.println(r);
+        // return Integer.toHexString(((i ? 1 : 0) << 3) + (r << 2) + (g << 1) + (b));
     }
 
     private static String padLeft(String number, int zeros) {
