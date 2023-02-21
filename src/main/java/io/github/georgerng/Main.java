@@ -12,18 +12,20 @@ import java.util.List;
 import java.util.Objects;
 
 public class Main {
+    private static final int rescale = 2;
+
     public static FileWriter output = null;
     private static List<String> grayscale = List.of("0","8","7","F");
 
     public static void main(String[] args) throws IOException {
 
         File out = new File("./main.mcfunction");
-        if(out.createNewFile()) System.out.println("There was already an output file, so it has been overwritten.");
+        if(!out.createNewFile()) System.out.println("There was already an output file, so it has been overwritten.");
         output = new FileWriter(out);
         output.write("""
                 ##
                  # main.builder.mcfunction
-                 # imagedata
+                 # ImageData
                  #
                  # Created by GeorgeRNG.
                  #
@@ -33,18 +35,15 @@ public class Main {
                 """);
 
         int nameLen = 3;
-        int frames;
-        if(args.length == 0) {
-            frames = 100;
-        }
-        else {
-            frames = Integer.parseInt(args[0]);
-        }
+        int frames = new File("./frames").list().length;
+        // frames = 100;
+
+        int logRate = frames / 100;
 
         for (int i = frames - 1; i >= 0; i-= 1) {
             try {
                 parseFrame(new File("./frames/frame" + padLeft(String.valueOf(i + 1), nameLen) + ".bmp"),i);
-                if(i % 10 == 0) System.out.println(100 * (frames - i) / frames);
+                if(i % logRate == 0) System.out.println(100 * (frames - i) / frames + "% Frame:" + (frames - i));
             }
             catch (Exception e) {
                 System.out.println("Frame" + i + ": " + e.getMessage());
@@ -64,7 +63,7 @@ public class Main {
 
         int[] data = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
-        StringBuilder command = new StringBuilder("execute as @e[type=minecraft:text_display,tag=video,tag=");
+        StringBuilder command = new StringBuilder("data merge @e[limit=1type=minecraft:text_display,tag=video,tag=");
         command.append(index);
         command.append("] run data merge entity @s {Tags:[\"video\",\"");
         command.append(index + 1);
@@ -76,16 +75,16 @@ public class Main {
         int width = image.getWidth(); // chunk size to divide
         for(int i = 0; i < data.length; i += width){
             lineI++;
-            if(lineI % 3 == 0) {
+            if(lineI % rescale == 0) {
                 int[] line = Arrays.copyOfRange(data, i, i+width);
                 for (int pixel: line) {
                     pixelI++;
-                    if(pixelI % 3 == 0) {
+                    if(pixelI % rescale == 0) {
                         String color = getCode(pixel);
                         if(!Objects.equals(lastColor, color)) {
-                            command.append("§"); // §r
+                            command.append("§");
                             command.append(color);
-                            command.append("§l");
+                            command.append("§l");//§r
                             lastColor = color;
                         }
                         command.append("█");
@@ -101,8 +100,7 @@ public class Main {
     }
 
     private static String getCode(int color) {
-        int colour = (int) (((color & 0xAA) * 1.25490196078431) / 64);
-        return grayscale.get(colour);
+        return grayscale.get((int) (((color & 0xAA) * 1.25490196078431) / 64));
         // boolean i = color > (0xAA_AA_AA / 2);
         // int min = i ? 0xAA : 0x55;
         // int r = ((0xFF0000 & color) >> 16) > min ? 1 : 0;
