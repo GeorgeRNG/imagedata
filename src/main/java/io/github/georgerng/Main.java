@@ -5,11 +5,9 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-
-        File out = new File("./main.mcfunction");
         
         // TextDisplay.render(new File("./frames"), out);
-        Bookshelf.renderFrame(new File("banana.bmp"), out,1);
+        Bookshelf.renderFrames(new File("frames"), "outputframes" ,1);
     }
 
     public static String padLeft(String number, int zeros) {
