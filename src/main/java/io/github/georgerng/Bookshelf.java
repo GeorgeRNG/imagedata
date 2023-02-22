@@ -19,7 +19,7 @@ public class Bookshelf {
     public static void renderFrames(File folder, String output, int rescale) {
         int namePadding = 3;
         int frames = folder.list().length;
-        frames = 500;
+        frames = 100;
         int logRate = frames / 100;
 
         for (int i = 0; i < frames; i++) {
@@ -69,7 +69,7 @@ public class Bookshelf {
                     Boolean green2 = (pixel & 0x00_00_FF_00) > ((0x00_00_FF_00 / 3) * 2);
                     Boolean blue2  = (pixel & 0x00_00_00_FF) > ((0x00_00_00_FF / 3) * 2);
 
-                    StringBuilder outputBuilder = new StringBuilder();
+                    StringBuffer outputBuilder = new StringBuffer();
                     outputBuilder.append("setblock ");
                     outputBuilder.append(String.valueOf(pixelI));
                     outputBuilder.append(" ");
@@ -88,7 +88,8 @@ public class Bookshelf {
                     outputBuilder.append(",slot_5_occupied=");
                     outputBuilder.append(String.valueOf(blue2));
                     outputBuilder.append(",facing=south]\n");
-                    
+
+                    writer.write(outputBuilder.toString());
 
                     // writer.write("setblock ");
                     // writer.write(String.valueOf(pixelI));
@@ -118,6 +119,8 @@ public class Bookshelf {
             // }
         }
 
+        // outputBuilder.toString();
+        // Files.write(output, outputBuilder.toString().getBytes() ,StandardOpenOption.WRITE);
         writer.close();
 
         return ((double) (System.nanoTime() - time)) / 1000000;
