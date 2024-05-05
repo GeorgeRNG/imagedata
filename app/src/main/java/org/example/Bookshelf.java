@@ -1,8 +1,7 @@
-package io.github.georgerng;
+package org.example;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,7 +23,7 @@ public class Bookshelf {
 
         for (int i = 0; i < frames; i++) {
             try {
-                File inputFile = new File("./frames/frame" + Main.padLeft(String.valueOf(i + 1), namePadding) + ".bmp") ;
+                File inputFile = new File("./frames/frame" + App.padLeft(String.valueOf(i + 1), namePadding) + ".bmp") ;
                 Path outputFile = Path.of(output + "/frame" + i + ".mcfunction");
                 Double time = renderFrame(inputFile,outputFile,rescale);
                 if(i % logRate == 0) System.out.println(100 * i / frames + "% Frame:" + i + " which took " + time + " ms");

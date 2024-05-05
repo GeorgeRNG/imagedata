@@ -1,4 +1,4 @@
-package io.github.georgerng;
+package org.example;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static io.github.georgerng.Main.padLeft;
+import static org.example.App.padLeft;
 
 public class TextDisplay {
     public static void render(File framesFolder, File outputFile) throws IOException {
@@ -32,7 +32,6 @@ public class TextDisplay {
                 
         int namePadding = 3;
         int frames = framesFolder.list().length;
-        frames = 100;
         int logRate = frames / 100;
 
         for (int i = frames - 1; i >= 0; i-= 1) {
